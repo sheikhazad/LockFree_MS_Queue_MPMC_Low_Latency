@@ -100,6 +100,8 @@ public:
     }
 
     // Dequeue operation - Remove from head
+    //:::TIPS: Same as StackMPMC: 
+    //acquire->relaxed->acquire->relaxed ::::::
     bool dequeue(T& out) {
         while (true) {
             //old_head can't be outside loop in queue (unlike stack). 
