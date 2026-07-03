@@ -109,7 +109,7 @@ public:
             //head is never null as dummy node guarantees
             Node* old_head = head.load(std::memory_order_acquire);
             // 2. Read the next pointer; this is the real node we might consume
-            Node* old_head_next = old_head->next.load(std::memory_order_acquire);
+            Node* old_head_next = old_head->next.load(std::memory_order_relaxed);
 
             if (old_head_next == nullptr) {
                 // Queue is logically empty: only dummy present
