@@ -61,7 +61,7 @@ public:
                 // This publishes: the new node, the node’s data, all prior writes to that node
                 // This is the ONLY real publish point
                 if (old_tail->next.compare_exchange_weak(old_tail_next, new_node,
-                        std::memory_order_release, // Publish new_node by linking it into the queue.
+                        std::memory_order_release, // (A)Publish new_node by linking it into the queue.
                                                    // Consumers can reach new_node only after this release CAS succeeds.
                         std::memory_order_relaxed)) // failure = retry
                 {
@@ -111,8 +111,8 @@ public:
             //head is never null as dummy node guarantees
             Node* old_head = head.load(std::memory_order_acquire);
             // 2. Read the next pointer; this is the real node we might consume
-            //We dont access old_head_next->data (except in CAS) and so relaxed enough 
-            Node* old_head_next = old_head->next.load(std::memory_order_relaxed);
+            //See (A) in enqueue() producer's release operation is on old_tail->next and observer/consumer need acquire
+            Node* old_head_next = old_head->next.load(std::memory_order_acquire); //(B)
 
             if (old_head_next == nullptr) {
                 // Queue is logically empty: only dummy present
