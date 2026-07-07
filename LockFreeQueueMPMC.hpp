@@ -44,6 +44,8 @@ public:
     // Enqueue operation - Append at tail
     // Enqueue operation – Michael & Scott MPMC queue
     // Assumes construction (dummy node) completes before any threads start
+    //:::TIPS: 
+    //acquire->acquire->release->All relaxed ::::::
     void enqueue(T const& value) {
         Node* new_node = new Node(value);
         new_node->next.store(nullptr, std::memory_order_relaxed);
