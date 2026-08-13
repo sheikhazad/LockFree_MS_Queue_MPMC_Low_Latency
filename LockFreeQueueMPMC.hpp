@@ -103,7 +103,7 @@ public:
 
     // Dequeue operation - Remove from head
     //:::TIPS: 
-    //acquire->acquire->acquire->relaxed ::::::
+    //acquire->acquire->All relaxed ::::::
     bool dequeue(T& out) {
         while (true) {
             //old_head can't be outside loop in queue (unlike stack). 
