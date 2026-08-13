@@ -157,8 +157,10 @@ public:
         //the operation without enforcing unnecessary synchronization.
         //Using acquire memory order here would be overkill, as it would enforce a full memory
         //barrier, which is not needed for a simple check like this.
-        //Acquire memory order is typically used when you need to ensure that all previous operations are visible
-        //before the current operation, which is not the case here.
+
+        //Acquire ensures that, when this load reads a value published
+        // by a release operation, all writes sequenced-before that release
+        // become visible to this thread before subsequent operation, which is not the case here.
         
        //Node* h = head.load(std::memory_order_acquire);
         Node* h = head.load(std::memory_order_relaxed);
