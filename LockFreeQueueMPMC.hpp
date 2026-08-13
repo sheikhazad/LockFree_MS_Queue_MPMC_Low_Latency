@@ -112,8 +112,10 @@ public:
             // 1. Load current head (dummy) with acquire so it's safe to dereference
             //head is never null as dummy node guarantees
             Node* old_head = head.load(std::memory_order_acquire);
+
             // 2. Read the next pointer; this is the real node we might consume
             //See (A) in enqueue() producer's release operation is on old_tail->next and observer/consumer need acquire
+            //(B) synchronize with (A) in enqueue()
             Node* old_head_next = old_head->next.load(std::memory_order_acquire); //(B)
 
             if (old_head_next == nullptr) {
@@ -123,8 +125,7 @@ public:
 
             //3. Attempt to swing head forward
             if (head.compare_exchange_weak(old_head, old_head_next,
-                    // We use ACQUIRE so we synchronize with the producer that enqueued 'next'.
-                    std::memory_order_acquire, // acquire on success: ensures we see next->data safely
+                    std::memory_order_relaxed, //Synchronised already at (B), no need for acquire
                     std::memory_order_relaxed)) 
             {
                 //4. Now we "own" old_head_next, safe to read its data
